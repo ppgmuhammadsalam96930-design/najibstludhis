@@ -2,6 +2,33 @@
 
 This repository contains a repo-ready version of your STL-UDHIS Assistant HTML with scripts externalized for **GitHub Pages** or general hosting.
 
+# stl_udhis
+
+STL - UDHIS Best Friends  
+This repository contains a single-page HTML application (index.html) built from the provided blueprint. It includes UI, theme system, secure client-side helpers, and an AI assistant interface.
+
+## Files
+- `index.html` - Main HTML file (full blueprint).
+- `README.md` - This file.
+- `.gitignore` - Recommended ignores.
+
+## How to use
+1. Clone this repository or download the ZIP.
+2. Serve `index.html` using a static server (or open directly in browser).  
+   Example (Python 3):  
+   ```bash
+   python -m http.server 8000
+   ```
+   Then open `http://localhost:8000` in your browser.
+
+## Notes
+- The HTML file references external CDNs (Tailwind, FontAwesome, Axios, Google Fonts). Online access is required for full styling.
+- Sensitive keys should not be hard-coded. The blueprint includes client-side helpers for storing API keys; handle with care.
+- If you want this on GitHub, create a new repository named `stl_udhis` and push the files. Optionally enable GitHub Pages to host the site.
+
+## Author
+Generated package for `stl_udhis` by ChatGPT on request.
+
 ## Files
 - `index.html` — main HTML (scripts are externalized)
 - Extracted JS files (scripts extracted from original HTML), e.g.:
