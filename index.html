@@ -1081,6 +1081,85 @@
 })();
 </script>
 <!-- ====== END UDHIS INJECTION ====== -->
+
+<!-- UDHIS MOBILE & SECURITY PATCH - injected -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style id="udhis-mobile-fixes">
+  /* Dark mode default: ensure variables fallback if not defined */
+  :root {
+    --udhis-safe-padding-top: env(safe-area-inset-top, 12px);
+  }
+  /* Ensure dark class styles get precedence without altering original theme tokens */
+  html.dark { color-scheme: dark; }
+  /* Mobile friendly body: avoid 100vh/position fixed issues */
+  body {
+    position: relative !important;
+    height: auto !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-top: var(--udhis-safe-padding-top);
+    touch-action: manipulation;
+  }
+  /* Notch-safe helpers */
+  .notch-safe {
+    padding-top: env(safe-area-inset-top, 12px);
+  }
+  /* Compact small inputs to fit mobile pocket-app style */
+  .compact-input { padding:.5rem .6rem; font-size:0.95rem; }
+  /* Toast */
+  #udhis-toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 18px;
+    min-width: 220px;
+    max-width: 92%;
+    z-index: 99999;
+    display: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgba(18,18,20,0.86);
+    color: #fff;
+  }
+  #udhis-toast.show { display: block; animation: udhis-toast-in .32s ease; }
+  @keyframes udhis-toast-in { from { transform: translate(-50%, 8px); opacity: 0 } to { transform: translate(-50%, 0); opacity: 1 } }
+  /* Action button inside toast */
+  #udhis-toast button { margin-left:12px; background:transparent; color:#9fe7ff; border:0; font-weight:600; cursor:pointer; }
+  /* iPhone aesthetic tweak: slightly rounded app-like container if present */
+  .app-like {
+    border-radius: 18px;
+    overflow: hidden;
+  }
+</style>
+<script>
+  // Default to dark mode for MAX iPhone-style look
+  try {
+    document.documentElement.classList.add('dark');
+  } catch(e) { console.warn('udhis: cannot set dark mode default', e); }
+  // Helper to detect iPhone-like devices (for extra polish)
+  window.__udhis_is_iphone = /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes('iPhone'));
+</script>
+<!-- end injection -->
+
+
+<!-- UDHIS Blob UI (injected) -->
+<style id="udhis-blob-style">
+  .blob-wrap { position: relative; display: inline-block; width:100%; }
+  .blob-bg { position:absolute; inset:0; pointer-events:none; z-index:0; display:block; filter: blur(8px) saturate(120%); opacity:0.95; }
+  .blob-input { position:relative; z-index:2; background:transparent; border:0; outline:none; width:100%; padding:12px 14px; color:inherit; font-size:1rem; }
+  .blob-container { border-radius:14px; overflow:hidden; display:block; position:relative; padding:6px; }
+  /* subtle animation */
+  @keyframes blobFloat { 0%{transform:translateY(0)} 50%{transform:translateY(-4px)} 100%{transform:translateY(0)} }
+  .blob-bg svg { width:120%; height:120%; transform-origin:center; animation: blobFloat 6s ease-in-out infinite; opacity:0.96; }
+  /* keep visuals non-invasive: ensure original borders/shadows still show */
+  .blob-inner { position:relative; z-index:1; border-radius:12px; }
+</style>
+
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 no-horizontal-scroll">
     <!-- Dynamic Island Notification -->
@@ -1125,7 +1204,7 @@
                 <div class="space-y-3">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">API Key</label>
-                        <input type="password" id="apiKey" class="enhanced-input compact-input" placeholder="Masukkan API Key Anda">
+                        <input type="password" id="apiKey" class="blob-input" data-udhis-blob="true" class="enhanced-input compact-input" placeholder="Masukkan API Key Anda">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Proxy URL (Opsional)</label>
@@ -1136,6 +1215,42 @@
                     </button>
                 </div>
             </div>
+            <!-- Sync dari Developer Email (injected) -->
+            <div class="enhanced-card p-4 mb-4" id="devEmailSyncCard">
+                <h3 class="text-lg font-black text-gray-800 dark:text-white mb-3">
+                    <i class="fas fa-envelope mr-2"></i>Sync via Email Developer
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pilih Email Developer</label>
+                        <select id="devSenderSelect" class="enhanced-input compact-input">
+                            <!-- options populated by JS from VERIFIED_SENDERS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Instruksi</label>
+                        <p class="text-xs text-gray-600 dark:text-gray-300">Minta verifikasi dari developer resmi. Proses ini akan mengirim kode verifikasi ke email developer terdaftar. Setelah developer menerima, minta mereka mengonfirmasi kode ke Anda (manual). Masukkan kode di bawah untuk menyelesaikan sinkronisasi.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="sendDevVerify" class="enhanced-btn btn-primary compact-btn">
+                            <i class="fas fa-paper-plane mr-2"></i>Kirim Permintaan Verifikasi
+                        </button>
+                        <button id="requestOfficialBlob" class="enhanced-btn btn-success compact-btn">
+                            <i class="fas fa-sync-alt mr-2"></i>Request Official Blob
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Masukkan Kode Verifikasi</label>
+                        <input type="text" id="devVerificationCode" class="enhanced-input compact-input" placeholder="Masukkan kode yang dikirim Developer">
+                    </div>
+                    <div>
+                        <button id="confirmDevVerify" class="enhanced-btn btn-primary w-full compact-btn">
+                            <i class="fas fa-check mr-2"></i>Konfirmasi & Simpan API Key Aman
+                        </button>
+                    </div>
+                </div>
+            </div>
+
 
             <!-- Theme Selection -->
             <div class="enhanced-card p-4 mb-4">
@@ -4599,7 +4714,302 @@ class DocumentExporter {
             </head>
             <body>
                 <div class="content">${styledContent}</div>
-            </body>
+            
+<!-- UDHIS MOBILE & SECURITY SCRIPTS - injected -->
+<div id="udhis-toast" role="status" aria-live="polite">
+  <span id="udhis-toast-text">Notice</span>
+  <button id="udhis-toast-action" style="display:inline-block;"></button>
+</div>
+<script>
+(function(){
+  // Toast utilities
+  function showToast(message, actionText, actionCb, timeout=8000) {
+    const t = document.getElementById('udhis-toast');
+    const tt = document.getElementById('udhis-toast-text');
+    const ta = document.getElementById('udhis-toast-action');
+    tt.textContent = message;
+    if (actionText && actionCb) {
+      ta.style.display = 'inline-block';
+      ta.textContent = actionText;
+      ta.onclick = function(){ try{ actionCb(); } catch(e){ console.error(e); } };
+    } else {
+      ta.style.display = 'none';
+      ta.onclick = null;
+    }
+    t.classList.add('show');
+    clearTimeout(t._timeout);
+    t._timeout = setTimeout(()=> t.classList.remove('show'), timeout);
+  }
+
+  // Helper to check for existing API key using common variables/hooks from blueprint
+  async function detectStoredApiKey() {
+    try {
+      // 1) Check CONFIG global (common in blueprint)
+      if (window.CONFIG && window.CONFIG.apiKey && typeof window.CONFIG.apiKey === 'string' && !window.CONFIG.apiKey.includes('***')) {
+        return {source:'config', key: window.CONFIG.apiKey};
+      }
+      // 2) Check secure wrapper if available (preferred)
+      if (window.__udhis_secure && typeof window.__udhis_secure.getDecryptedApiKey === 'function') {
+        try {
+          const k = await window.__udhis_secure.getDecryptedApiKey();
+          if (k) return {source:'secure', key: k};
+        } catch(e){}
+      }
+      // 3) Check window global injected key
+      if (window.__udhis_global_api_key && typeof window.__udhis_global_api_key === 'string') {
+        return {source:'global', key: window.__udhis_global_api_key};
+      }
+      // 4) localStorage last resort (but blueprint should avoid this)
+      try {
+        const ls = localStorage.getItem('udhis_api_key');
+        if (ls) return {source:'localStorage', key: ls};
+      } catch(e){}
+    } catch(e) {
+      console.error('udhis: detectStoredApiKey error', e);
+    }
+    return null;
+  }
+
+  async function promptToConfigure() {
+    showToast('API Key belum disetel — buka Pengaturan untuk mengonfigurasi.', 'Buka', function(){
+      // try to focus apiKey input if present
+      const el = document.querySelector('#apiKey') || document.querySelector('input[name="apiKey"]') || document.querySelector('input[type="password"]');
+      if (el) { el.scrollIntoView({behavior:"smooth", block:"center"}); el.focus(); }
+      // if there is a modal open function, try to call it (non-invasive)
+      if (window.openApiConfig) try{ window.openApiConfig(); } catch(e){}
+    }, 12000);
+  }
+
+  // add compact API storage UI if a config area exists
+  function addApiStorageUi() {
+    try {
+      const apiCard = document.querySelector('.enhanced-card:has(#apiKey)') || document.querySelector('.enhanced-card') || document.querySelector('.card') || document.querySelector('form');
+      if (!apiCard || document.getElementById('apiStorageMode')) return;
+      const container = document.createElement('div');
+      container.className = 'mt-3 notch-safe';
+      container.innerHTML = `
+        <label class="block text-sm font-medium mb-1">Mode Keamanan API</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="apiStorageMode" class="compact-input" style="flex:0 0 52%;">
+            <option value="ephemeral">Ephemeral (default)</option>
+            <option value="passphrase">Passphrase (encrypted)</option>
+          </select>
+          <label style="font-size:13px;display:flex;align-items:center;gap:6px;">
+            <input id="persistApi" type="checkbox" /> <span>Persist (simpan terenkripsi)</span>
+          </label>
+        </div>
+        <input id="apiPassphrase" class="compact-input mt-2" placeholder="Passphrase (6+ karakter)" style="display:none;width:100%;">
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button id="saveApiConfig" class="compact-input" style="flex:1">Simpan API Key Aman</button>
+        </div>
+      `;
+      // Try to append into card
+      apiCard.appendChild(container);
+
+      const storageSelect = document.getElementById('apiStorageMode');
+      const passIn = document.getElementById('apiPassphrase');
+      storageSelect.addEventListener('change', ()=> passIn.style.display = storageSelect.value === 'passphrase' ? 'block' : 'none');
+
+      document.getElementById('saveApiConfig').addEventListener('click', async () => {
+        const apiKeyEl = document.getElementById('apiKey') || document.querySelector('input[name="apiKey"]') || document.querySelector('input[type="password"]');
+        const apiKey = apiKeyEl ? apiKeyEl.value.trim() : null;
+        const persist = document.getElementById('persistApi').checked;
+        const mode = document.getElementById('apiStorageMode').value;
+        const passphrase = document.getElementById('apiPassphrase').value || undefined;
+        if (!apiKey || apiKey.length < 10) { alert('Masukkan API Key yang valid (minimal 10 karakter).'); return; }
+        try {
+          if (window.__udhis_secure && typeof window.__udhis_secure.setEncryptedApiKey === 'function') {
+            await window.__udhis_secure.setEncryptedApiKey(apiKey, mode === 'passphrase' ? passphrase : undefined, { persistEphemeral: persist });
+            if (window.CONFIG) { window.CONFIG.apiKey = '***stored-securely***'; if (typeof window.saveConfig === 'function') try{ window.saveConfig(); }catch(e){} }
+            showToast('API Key tersimpan dengan mode aman.', null, null, 5000);
+          } else {
+            // fallback insecure storage (only if user insisted)
+            try { localStorage.setItem('udhis_api_key', apiKey); showToast('API Key tersimpan secara lokal (tidak terenkripsi).', null, null, 6000); }
+            catch(e){ alert('Gagal menyimpan API Key: ' + e.message); }
+          }
+        } catch(err) {
+          console.error(err);
+          alert('Gagal menyimpan API Key. Lihat console untuk detail.');
+        }
+      });
+    } catch(e) { console.error('udhis: addApiStorageUi failed', e); }
+  }
+
+  // Resolve API key polished (tries secure getter, global, prompt)
+  async function resolveApiKeyPolished() {
+    try {
+      const detected = await detectStoredApiKey();
+      if (detected && detected.key) return detected.key;
+      // attempt secure getter that might require passphrase
+      if (window.__udhis_secure && typeof window.__udhis_secure.getDecryptedApiKey === 'function') {
+        try {
+          const k = await window.__udhis_secure.getDecryptedApiKey();
+          if (k) return k;
+        } catch(e){
+          // prompt for passphrase fallback
+          const pass = prompt('Masukkan passphrase untuk mendekripsi API Key (atau Cancel):');
+          if (pass) {
+            try {
+              const k2 = await window.__udhis_secure.getDecryptedApiKey(pass);
+              if (k2) return k2;
+            } catch(e){}
+          }
+        }
+      }
+      // global fallback
+      if (window.__udhis_global_api_key) return window.__udhis_global_api_key;
+      // prompt user for temporary API key
+      const manual = prompt('Masukkan API Key (sementara). Tekan Cancel untuk batalkan:');
+      if (manual && manual.length > 10) return manual;
+    } catch(e){ console.error('udhis: resolveApiKeyPolished', e); }
+    return null;
+  }
+
+  // On load: assign UI + check API key, show toast if missing
+  async function initUdhisPatches() {
+    try {
+      addApiStorageUi();
+      const detected = await detectStoredApiKey();
+      if (!detected) {
+        // show a non-blocking toast prompting for configuration (unless explicit flag present)
+        // If page has a query param 'skip_apikey_warn' then do not show
+        const urlp = new URL(window.location.href);
+        if (!urlp.searchParams.get('skip_apikey_warn')) {
+          setTimeout(()=> promptToConfigure(), 900);
+        }
+      } else {
+        console.info('udhis: detected api key from', detected.source);
+      }
+    } catch(e){ console.error('udhis init error', e); }
+  }
+
+  // Wait for DOM ready
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initUdhisPatches);
+  else initUdhisPatches();
+
+  // Expose functions globally for other scripts
+  window.__udhis_toast = { show: showToast };
+  window.__udhis_resolveApiKey = resolveApiKeyPolished;
+})();
+</script>
+<!-- end injection -->
+
+
+<script>
+(function(){
+  // Populate developer sender select from secure namespace if available
+  const senderSelect = document.getElementById('devSenderSelect');
+  function populateSenders() {
+    let senders = ['najibwahidussalam938@gmail.com','ikhsanfakhrozi12@gmail.com','najibsalam23@gmail.com'];
+    try {
+      if (window.__udhis_secure && Array.isArray(window.__udhis_secure.VERIFIED_SENDERS)) {
+        senders = window.__udhis_secure.VERIFIED_SENDERS.slice(0);
+      }
+    } catch(e){}
+    senderSelect.innerHTML = '';
+    senders.forEach((s, i) => {
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = s;
+      senderSelect.appendChild(opt);
+    });
+  }
+  populateSenders();
+
+  // Generate short numeric verification code
+  function generateCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  // Keep last code in memory for client-side verification
+  let lastSentCode = null;
+  let lastSentIndex = null;
+  let lastSentAt = null;
+
+  document.getElementById('sendDevVerify').addEventListener('click', async function(){
+    const idx = parseInt(senderSelect.value || '0', 10);
+    const code = generateCode();
+    lastSentCode = code;
+    lastSentIndex = idx;
+    lastSentAt = Date.now();
+    // Prepare message params - include origin and short id to help developer identify request
+    const params = {
+      to_email: (window.__udhis_secure && window.__udhis_secure.VERIFIED_SENDERS && window.__udhis_secure.VERIFIED_SENDERS[idx]) || senderSelect.options[idx].text,
+      from_email: (window.__udhis_secure && window.__udhis_secure.VERIFIED_SENDERS && window.__udhis_secure.VERIFIED_SENDERS[0]) || senderSelect.options[0].text,
+      verification_code: code,
+      requester_origin: location.origin,
+      requester_agent: navigator.userAgent.slice(0,120),
+      timestamp: new Date().toISOString()
+    };
+    try {
+      if (!window.__udhis_secure || typeof window.__udhis_secure.sendVerificationEmail !== 'function') {
+        alert('Fungsi email belum tersedia. Pastikan EmailJS SDK di-load dan konfigurasi service/template sudah diatur.');
+        return;
+      }
+      // send using helper - rely on the server-side configured service/template ids saved in localStorage via setEmailServiceConfig()
+      await window.__udhis_secure.sendVerificationEmail(params.to_email, idx, code, params).catch(err => { throw err; });
+      // show toast
+      if (window.__udhis_toast && window.__udhis_toast.show) window.__udhis_toast.show('Permintaan verifikasi dikirim ke developer.', 'Oke', ()=>{}, 7000);
+      alert('Permintaan verifikasi terkirim. Minta developer untuk mengonfirmasi kode kepada Anda.');
+    } catch (e) {
+      console.error('sendVerificationEmail failed', e);
+      alert('Gagal mengirim verifikasi. Pastikan EmailJS dikonfigurasi dan SDK dimuat.');
+    }
+  });
+
+  // Request official blob placeholder (this is a manual step: developer may email a blob to user)
+  document.getElementById('requestOfficialBlob').addEventListener('click', function(){
+    alert('Fungsi Request Official Blob bersifat manual di desain ini. Pengembang resmi akan menerima permintaan verifikasi dan dapat mengirimkan blob terenkripsi secara manual ke Anda atau menyediakan endpoint server untuk sinkronisasi otomatis.');
+  });
+
+  // Confirm verification and then save encrypted API key using secure helper
+  document.getElementById('confirmDevVerify').addEventListener('click', async function(){
+    const entered = (document.getElementById('devVerificationCode').value || '').trim();
+    if (!entered) { alert('Masukkan kode verifikasi yang Anda terima dari developer.'); return; }
+    if (!lastSentCode || !lastSentAt || !lastSentIndex) {
+      alert('Tidak ada permintaan verifikasi yang terdeteksi. Kirim permintaan verifikasi terlebih dahulu.');
+      return;
+    }
+    // basic expiry 30 minutes
+    if ((Date.now() - lastSentAt) > (30*60*1000)) {
+      alert('Kode verifikasi telah kedaluwarsa. Silakan kirim ulang permintaan verifikasi.');
+      lastSentCode = null; lastSentAt = null; lastSentIndex = null;
+      return;
+    }
+    if (entered !== lastSentCode) {
+      alert('Kode verifikasi tidak cocok. Pastikan Anda menerima kode yang benar dari developer.');
+      return;
+    }
+    // If codes match, proceed to encrypt & store API key (user must have input API key in the API Key field)
+    const apiKeyEl = document.getElementById('apiKey');
+    const apiKey = apiKeyEl ? apiKeyEl.value.trim() : null;
+    if (!apiKey || apiKey.length < 10) { alert('Masukkan API Key Anda dulu sebelum konfirmasi.'); return; }
+    try {
+      if (window.__udhis_secure && typeof window.__udhis_secure.setEncryptedApiKey === 'function') {
+        // use passphrase mode bound to developer index as provenance
+        const passphrase = 'dev-sync-' + lastSentIndex + '-' + String(Math.floor(Math.random()*900000)+100000);
+        await window.__udhis_secure.setEncryptedApiKey(apiKey, passphrase, { persistEphemeral: true });
+        if (window.__udhis_toast && window.__udhis_toast.show) window.__udhis_toast.show('API Key tersimpan terenkripsi dan terverifikasi oleh developer.', null, null, 8000);
+        alert('Sukses: API Key tersimpan secara terenkripsi. Simpan passphrase berikut untuk pemulihan: ' + passphrase);
+        // clear sensitive fields
+        apiKeyEl.value = '';
+        document.getElementById('devVerificationCode').value = '';
+        lastSentCode = null; lastSentAt = null; lastSentIndex = null;
+      } else {
+        // fallback: localStorage (less secure)
+        localStorage.setItem('udhis_api_key', apiKey);
+        alert('API Key disimpan secara lokal (tidak terenkripsi) - karena helper keamanan tidak tersedia.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Gagal menyimpan API Key: ' + (e && e.message ? e.message : e));
+    }
+  });
+
+})();
+</script>
+
+</body>
             </html>
         `);
         
