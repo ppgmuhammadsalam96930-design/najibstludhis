@@ -1,0 +1,12 @@
+{
+  "openai_provider": {
+    "url": "https://api.openai.com/v1/chat/completions",
+    "model": "gpt-4o-mini"
+  },
+  "emailjs": {
+    "user_public_key": "<your-emailjs-user-id>",
+    "service_id": "<service_id>",
+    "template_id": "<template_id>"
+  },
+  "notes": "Do NOT commit secrets. Use environment variables or server-side proxies."
+}
