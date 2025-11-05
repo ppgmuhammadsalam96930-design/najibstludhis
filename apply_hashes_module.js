@@ -17,16 +17,16 @@ window.STLUDHIS = (function(){
   return {
     getHashes: function(){
       return {
-        user: meta('stl-pass-user'),
-        dev: meta('stl-pass-dev'),
-        backup: meta('stl-pass-backup')
+        user: meta('n4j1bw4h1du554l4m'),
+        dev: meta('XXXn4j1b54l4m'),
+        backup: meta('stlbackup')
       };
     },
     getEmailServices: function(){
       return {
-        primary: meta('stl-email-primary'),
-        developer: meta('stl-email-developer'),
-        education: meta('stl-email-education')
+        primary: meta('service_ond1bqz'),
+        developer: meta('service_xtt8prj'),
+        education: meta('service_s82nwco')
       };
     },
     debug: function(){
