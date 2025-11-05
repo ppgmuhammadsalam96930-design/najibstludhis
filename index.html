@@ -1,0 +1,49 @@
+
+<!-- 🔐 STL-UDHIS META PLACEHOLDERS -->
+<meta name="stl-pass-user" content="">
+<meta name="stl-pass-dev" content="">
+<meta name="stl-pass-backup" content="">
+<meta name="stl-email-user" content="">
+<!-- END STL-UDHIS META PLACEHOLDERS -->
+
+<!-- placeholder for index.html -->
+
+
+<!-- 🌐 STL-UDHIS HYBRID INTELLIGENT PORTAL -->
+<div id="get-started-portal" style="position: fixed; inset: 0; background: linear-gradient(135deg, #0a0f24, #193869, #0a0f24); color: white; font-family: 'Segoe UI', Roboto, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 9999; transition: opacity 0.4s ease;">
+  <h1 style="font-size: clamp(1.8rem, 3vw, 3rem); font-weight: 700; margin-bottom: 10px;">⚡ STL-UDHIS Secure Edition</h1>
+  <p id="portal-status-text" style="font-size: clamp(0.9rem, 2vw, 1.2rem); opacity: 0.9; margin-bottom: 24px;">Memuat status jaringan...</p>
+  <div id="portal-buttons" style="display: none; flex-wrap: wrap; gap: 10px; justify-content: center;">
+    <button onclick="openLink('https://ppgmuhammadsalam96930-design.github.io/stl_udhis/')" style="padding: 12px 18px; background:#00d1ff; border:none; border-radius:8px; color:#00111a; font-weight:600; cursor:pointer;">🌐 Coba Demo Langsung</button>
+    <button onclick="openLink('DEVELOPER_GUIDE.md')" style="padding: 12px 18px; background:#ffd400; border:none; border-radius:8px; color:#1a1400; font-weight:600; cursor:pointer;">🧰 Panduan Developer</button>
+    <button onclick="openLink('USER_GUIDE.md')" style="padding: 12px 18px; background:#66ff66; border:none; border-radius:8px; color:#002a00; font-weight:600; cursor:pointer;">📗 Panduan Pengguna</button>
+  </div>
+  <p id="offline-msg" style="display:none; font-size:1rem; color:#ff6666;">📴 Kamu sedang offline.<br> Lanjutkan aktivitas STL-UDHIS secara lokal.  </p>
+  <p style="margin-top:30px; font-size:0.8rem; opacity:0.6;">Tekan di mana saja untuk melanjutkan...</p>
+</div>
+<script>
+  const portal = document.getElementById('get-started-portal');
+  const statusText = document.getElementById('portal-status-text');
+  const btnGroup = document.getElementById('portal-buttons');
+  const offlineMsg = document.getElementById('offline-msg');
+  function openLink(url) { window.open(url, '_blank'); }
+  function checkNetworkStatus() {
+    if (navigator.onLine) {
+      statusText.innerHTML = '🟢 Online Mode Aktif';
+      btnGroup.style.display = 'flex';
+      offlineMsg.style.display = 'none';
+    } else {
+      statusText.innerHTML = '📴 Offline Mode Aktif';
+      btnGroup.style.display = 'none';
+      offlineMsg.style.display = 'block';
+    }
+  }
+  checkNetworkStatus();
+  window.addEventListener('online', checkNetworkStatus);
+  window.addEventListener('offline', checkNetworkStatus);
+  portal.addEventListener('click', () => {
+    portal.style.opacity = '0';
+    setTimeout(() => portal.style.display = 'none', 400);
+  });
+</script>
+<!-- ✅ END HYBRID INTELLIGENT PORTAL -->
