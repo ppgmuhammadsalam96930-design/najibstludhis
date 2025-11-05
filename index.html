@@ -1,4 +1,3 @@
-
 <!-- 🔐 STL-UDHIS META PLACEHOLDERS -->
 <meta name="stl-pass-user" content="">
 <meta name="stl-pass-dev" content="">
@@ -7782,6 +7781,98 @@ console.log('✅ Sistem Kontrol Pertanyaan UDHIS PATEN berhasil diinjeksi!');
             e.preventDefault();
         }
     });
+})();
+</script>
+<script>
+(function() {
+    // Fungsi untuk membuat dan menambahkan footer
+    function createFooter() {
+        // Hapus footer lama jika ada
+        const oldFooter = document.getElementById('injected-footer');
+        if (oldFooter) {
+            oldFooter.remove();
+        }
+        
+        // Buat elemen footer baru
+        const footer = document.createElement('footer');
+        footer.id = 'injected-footer';
+        footer.innerHTML = `
+            <div class="footer-content">
+                <p>© 2025 Muhammad Najib Wahidus Salam</p>
+                <p>"Dari guru SD, untuk guru, oleh guru, bagi guru."</p>
+                <p>Sidoarjo, 5 November 2025 — STL-UDHIS_Friends</p>
+                <p>Seluruh hak cipta dilindungi undang-undang.</p>
+            </div>
+        `;
+        
+        // Tambahkan style untuk footer
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #injected-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: #f5f5f5;
+                color: #333;
+                text-align: center;
+                padding: 10px 0;
+                font-size: 12px;
+                line-height: 1.4;
+                border-top: 1px solid #ddd;
+                box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+                z-index: 9999;
+                box-sizing: border-box;
+            }
+            
+            #injected-footer .footer-content {
+                max-width: 100%;
+                margin: 0 auto;
+                padding: 0 15px;
+            }
+            
+            #injected-footer p {
+                margin: 2px 0;
+            }
+            
+            /* Tambahkan padding ke body agar konten tidak tertutup footer */
+            body {
+                padding-bottom: 80px !important;
+            }
+            
+            /* Untuk perangkat mobile dengan viewport kecil */
+            @media (max-width: 480px) {
+                #injected-footer {
+                    font-size: 10px;
+                    padding: 8px 0;
+                }
+                
+                body {
+                    padding-bottom: 70px !important;
+                }
+            }
+            
+            /* Pastikan footer tidak mengganggu elemen interaktif di bagian bawah */
+            button, a, [onclick] {
+                z-index: 10000 !important;
+                position: relative;
+            }
+        `;
+        
+        // Tambahkan style dan footer ke dokumen
+        document.head.appendChild(style);
+        document.body.appendChild(footer);
+    }
+    
+    // Jalankan saat dokumen siap
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', createFooter);
+    } else {
+        createFooter();
+    }
+    
+    // Jalankan juga saat ukuran window berubah
+    window.addEventListener('resize', createFooter);
 })();
 </script>
 <!-- === End UDHIS Ultimate Enhancements === -->
