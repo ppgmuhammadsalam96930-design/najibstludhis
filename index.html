@@ -7783,6 +7783,124 @@ console.log('✅ Sistem Kontrol Pertanyaan UDHIS PATEN berhasil diinjeksi!');
     });
 })();
 </script>
+<script>
+(function() {
+    // Fungsi untuk menambahkan footer hak cipta yang terintegrasi
+    function integrateCopyrightFooter() {
+        // Cari footer utama yang sudah ada
+        const mainFooter = document.querySelector('footer');
+        
+        if (mainFooter) {
+            // Jika ada footer utama, tambahkan hak cipta di dalamnya
+            const copyrightSection = document.createElement('div');
+            copyrightSection.className = 'copyright-integrated';
+            copyrightSection.innerHTML = `
+                <div class="copyright-divider"></div>
+                <div class="copyright-text">
+                    <p>© 2025 Muhammad Najib Wahidus Salam</p>
+                    <p>"Dari guru SD, untuk guru, oleh guru, bagi guru."</p>
+                    <p>Sidoarjo, 5 November 2025 — STL-UDHIS_Friends</p>
+                    <p>Seluruh hak cipta dilindungi undang-undang.</p>
+                </div>
+            `;
+            
+            mainFooter.appendChild(copyrightSection);
+        } else {
+            // Jika tidak ada footer, buat footer baru yang terintegrasi
+            const newFooter = document.createElement('footer');
+            newFooter.className = 'integrated-copyright-footer';
+            newFooter.innerHTML = `
+                <div class="copyright-content">
+                    <p>© 2025 Muhammad Najib Wahidus Salam</p>
+                    <p>"Dari guru SD, untuk guru, oleh guru, bagi guru."</p>
+                    <p>Sidoarjo, 5 November 2025 — STL-UDHIS_Friends</p>
+                    <p>Seluruh hak cipta dilindungi undang-undang.</p>
+                </div>
+            `;
+            
+            document.body.appendChild(newFooter);
+        }
+        
+        // Tambahkan style yang sesuai
+        addCopyrightStyles();
+    }
+    
+    function addCopyrightStyles() {
+        const style = document.createElement('style');
+        style.innerHTML = `
+            /* Style untuk copyright yang diintegrasikan ke footer existing */
+            .copyright-integrated {
+                margin-top: 20px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(255,255,255,0.3);
+                text-align: center;
+                color: #666;
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            
+            .copyright-divider {
+                height: 1px;
+                background: linear-gradient(to right, transparent, #ccc, transparent);
+                margin-bottom: 15px;
+            }
+            
+            .copyright-text p {
+                margin: 3px 0;
+            }
+            
+            /* Style untuk footer baru jika tidak ada footer existing */
+            .integrated-copyright-footer {
+                background-color: #f8f9fa;
+                color: #6c757d;
+                text-align: center;
+                padding: 20px 15px;
+                font-size: 12px;
+                line-height: 1.4;
+                margin-top: auto; /* Untuk mendorong ke bawah jika menggunakan flex */
+                border-top: 1px solid #e9ecef;
+            }
+            
+            .integrated-copyright-footer .copyright-content p {
+                margin: 4px 0;
+            }
+            
+            /* Pastikan body memiliki layout yang mendukung footer di bawah */
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            
+            /* Responsif */
+            @media (max-width: 768px) {
+                .copyright-integrated,
+                .integrated-copyright-footer {
+                    font-size: 11px;
+                    padding: 15px 10px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .copyright-integrated,
+                .integrated-copyright-footer {
+                    font-size: 10px;
+                    padding: 12px 8px;
+                }
+            }
+        `;
+        
+        document.head.appendChild(style);
+    }
+    
+    // Jalankan saat dokumen siap
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', integrateCopyrightFooter);
+    } else {
+        integrateCopyrightFooter();
+    }
+})();
+</script>
 <!-- === End UDHIS Ultimate Enhancements === -->
 </body>
 </html>
