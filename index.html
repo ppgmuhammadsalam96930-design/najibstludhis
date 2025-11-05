@@ -7678,6 +7678,112 @@ console.log('✅ Sistem Kontrol Pertanyaan UDHIS PATEN berhasil diinjeksi!');
 
 })();
 </script>
+<script>
+(function() {
+    // Fungsi untuk mengatur viewport
+    function setViewport() {
+        let viewport = document.querySelector('meta[name="viewport"]');
+        
+        if (!viewport) {
+            viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            document.head.appendChild(viewport);
+        }
+        
+        // Atur viewport untuk smartphone
+        viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no';
+        
+        // Batasi ukuran maksimum viewport (sesuaikan dengan kebutuhan)
+        const maxWidth = 480; // Ukuran maksimum viewport (sesuaikan)
+        
+        // Tambahkan gaya untuk membatasi lebar konten
+        let style = document.createElement('style');
+        style.id = 'viewport-limiter';
+        style.innerHTML = `
+            body {
+                max-width: ${maxWidth}px !important;
+                margin: 0 auto !important;
+                overflow-x: hidden !important;
+            }
+            
+            /* Pastikan elemen tidak melebihi lebar kontainer */
+            img, table, iframe, object, video {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+            
+            /* Tambahan untuk kompatibilitas perangkat mobile */
+            html, body {
+                touch-action: pan-x pan-y;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+            
+            /* Izinkan seleksi teks pada area input dan teks yang perlu */
+            input, textarea, [contenteditable="true"] {
+                -webkit-user-select: text !important;
+                -moz-user-select: text !important;
+                -ms-user-select: text !important;
+                user-select: text !important;
+            }
+        `;
+        
+        // Hapus style lama jika ada
+        const oldStyle = document.getElementById('viewport-limiter');
+        if (oldStyle) {
+            oldStyle.remove();
+        }
+        
+        // Tambahkan style baru
+        document.head.appendChild(style);
+    }
+    
+    // Jalankan saat dokumen siap
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setViewport);
+    } else {
+        setViewport();
+    }
+    
+    // Jalankan juga saat ukuran window berubah
+    window.addEventListener('resize', setViewport);
+    window.addEventListener('orientationchange', setViewport);
+    
+    // Pencegahan zoom dengan gesture
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('gesturechange', function(e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('gestureend', function(e) {
+        e.preventDefault();
+    });
+    
+    // Pencegahan zoom dengan double tap (untuk iOS)
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+    
+    // Blokir zoom dengan keyboard
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && (e.keyCode === 107 || e.keyCode === 109 || e.keyCode === 187 || e.keyCode === 189)) {
+            e.preventDefault();
+        }
+    });
+})();
+</script>
 <!-- === End UDHIS Ultimate Enhancements === -->
 </body>
 </html>
