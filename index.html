@@ -7970,5 +7970,49 @@ console.log('✅ Sistem Kontrol Pertanyaan UDHIS PATEN berhasil diinjeksi!');
 })();
 </script>
 <!-- === End UDHIS Ultimate Enhancements === -->
+<script>
+function openLink(url) {
+  // jika online -> buka normal
+  if (navigator.onLine) {
+    window.open(url, '_blank');
+    return;
+  }
+
+  // offline -> coba ambil dari cache (navigasi)
+  if ('caches' in window) {
+    caches.match(url).then(response => {
+      if (response) {
+        // buka cached page di tab baru by creating blob URL from response text
+        response.text().then(html => {
+          const blob = new Blob([html], {type: 'text/html'});
+          const blobUrl = URL.createObjectURL(blob);
+          window.open(blobUrl, '_blank');
+          // optional: revokeObjectURL after delay (can't revoke immediately)
+          setTimeout(()=> URL.revokeObjectURL(blobUrl), 60_000);
+        });
+      } else {
+        // fallback ke offline.html yang telah dicache
+        caches.match('/offline.html').then(off => {
+          if (off) {
+            off.text().then(html => {
+              const blob = new Blob([html], {type: 'text/html'});
+              const blobUrl = URL.createObjectURL(blob);
+              window.open(blobUrl, '_blank');
+              setTimeout(()=> URL.revokeObjectURL(blobUrl), 60_000);
+            });
+          } else {
+            alert('Offline dan halaman belum tersedia di cache.');
+          }
+        });
+      }
+    }).catch(err => {
+      console.warn('Caches.match error', err);
+      alert('Tidak dapat membuka link saat offline.');
+    });
+  } else {
+    alert('Browser tidak mendukung cache API. Tidak bisa membuka link offline.');
+  }
+}
+</script>
 </body>
 </html>
